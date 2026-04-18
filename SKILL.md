@@ -106,7 +106,7 @@ A) 有活跃子任务 → 不干预
 B) 没有活跃子任务 → spawn 新子任务继续
 
 spawn 模板：
-sessions_spawn model=opus task=继续 <项目名> 开发。工作目录 <项目目录>。Discord thread to=channel:<threadID>。读 IMPLEMENTATION_PLAN.md 从断点继续。如果全部完成就批判性审查代码找新优化点并更新计划。用 loop.sh 或手动迭代实现。go build 验证。git commit。每完成一个任务往 thread 汇报。写大文件用 write+edit。失败2次换方法。
+sessions_spawn model=opus runTimeoutSeconds=3600 task=继续 <项目名> 开发。工作目录 <项目目录>。Discord thread to=channel:<threadID>。读 IMPLEMENTATION_PLAN.md 从断点继续。如果全部完成就批判性审查代码找新优化点并更新计划。用 loop.sh 或手动迭代实现。go build 验证。git commit。每完成一个任务往 thread 汇报。写大文件用 write+edit。失败2次换方法。
 ```
 
 #### 步骤 5：spawn 第一个子任务
