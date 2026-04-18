@@ -152,12 +152,34 @@ git worktree add ../project-w3 -b task-3-branch
 
 ### 4. 并行启动 Codex
 
-```bash
-cd ../project-w1 && echo "<任务1描述>" | codex exec --full-auto &
-cd ../project-w2 && echo "<任务2描述>" | codex exec --full-auto &
-cd ../project-w3 && echo "<任务3描述>" | codex exec --full-auto &
-wait
+⚠️ 不要用后台 `&` + `wait`！用 `process` 工具启动后台进程，这样可以在等待期间发消息汇报。
+
 ```
+# 用 process 工具启动每个 Codex（不阻塞）
+process action=start command="cd ../project-w1 && echo '<任务1>' | codex exec --full-auto"
+→ 记住 sessionId: w1-session
+
+process action=start command="cd ../project-w2 && echo '<任务2>' | codex exec --full-auto"
+→ 记住 sessionId: w2-session
+
+process action=start command="cd ../project-w3 && echo '<任务3>' | codex exec --full-auto"
+→ 记住 sessionId: w3-session
+
+# 汇报已启动
+message → "✅ 已启动 3 个 Codex"
+
+# 轮询每个进程，完成一个汇报一个
+process action=poll sessionId=w1-session timeout=300000
+message → "✅ 任务1 完成"
+
+process action=poll sessionId=w2-session timeout=300000
+message → "✅ 任务2 完成"
+
+process action=poll sessionId=w3-session timeout=300000
+message → "✅ 任务3 完成"
+```
+
+关键：`process` 工具启动后立即返回，不阻塞 Opus，所以 Opus 可以在等待期间调 message 工具发消息。
 
 每个 Codex 的 prompt 必须包含：
 - 具体要改什么文件
@@ -244,3 +266,4 @@ spawn: sessions_spawn model=opus runTimeoutSeconds=3600 task=<并行编排任务
 
 - Based on [Ralph Wiggum](https://ghuntley.com/ralph/) by [@GeoffreyHuntley](https://github.com/ghuntley)
 - Built for [OpenClaw](https://github.com/openclaw/openclaw)
+11. **后台 & + wait 会阻塞汇报** → 用 `process` 工具启动后台进程，轮询完成状态，每个完成后立即汇报
